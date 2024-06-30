@@ -1,4 +1,4 @@
-export const item = [
+export const items = [
   {
     name: "Protein powder",
     price: 85,

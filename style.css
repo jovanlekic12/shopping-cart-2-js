@@ -1,1 +1,106 @@
+html {
+  font-size: 62.5%;
+}
 
+#app {
+  margin: 0 5rem;
+}
+
+.nav__bar {
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  font-family: sans-serif;
+  justify-content: space-between;
+  background-color: rgb(193, 255, 193);
+}
+
+.nav__bar__title {
+  padding: 0 2rem;
+}
+
+.nav__bar__div {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0 3rem;
+}
+
+.nav__bar__icon {
+  width: 2.5rem;
+}
+
+.nav__bar__icon__number {
+  background-color: rgb(32, 255, 32);
+  font-size: 2rem;
+  text-align: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.shop__list {
+  background-color: rgb(157, 247, 157);
+}
+
+.shop__list {
+  list-style: none;
+  padding: 1rem;
+}
+
+.arrow {
+  width: 2rem;
+  height: 2rem;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.arrow:hover {
+  cursor: pointer;
+}
+
+.item__quantity {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2rem 0;
+}
+
+.item__quantity__div {
+  display: flex;
+  align-items: center;
+}
+
+.btn {
+  padding: 1rem 1rem;
+  border-radius: 2rem;
+}
+
+.btn__add {
+  background-color: rgb(32, 255, 32);
+}
+
+.btn__add:hover {
+  background-color: rgb(17, 214, 17);
+}
+
+.btn__delete {
+  background-color: rgb(241, 115, 115);
+}
+
+.btn__delete:hover {
+  background-color: rgb(230, 74, 74);
+}
+
+.btn:hover {
+  cursor: pointer;
+}
