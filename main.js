@@ -3,11 +3,40 @@ import "./data.js";
 import { items } from "./data.js";
 
 const list = document.querySelector(".shop__list");
+const counterIcon = document.querySelector(".nav__bar__icon__number");
+const cartIcon = document.querySelector(".nav__bar__icon");
+const cartOverlay = document.querySelector(".overlay");
+const shoppingCart = document.querySelector(".shopping__cart");
+
+class CartManager {
+  items;
+  constructor() {
+    this.items = [];
+  }
+
+  addItem(item) {
+    this.items.push(item);
+  }
+
+  getTotalQuantity() {
+    let totalQuantity = 0;
+    for (let i = 0; i <= this.items.length - 1; i++) {
+      totalQuantity = totalQuantity + this.items[i].quantity;
+    }
+    return totalQuantity;
+  }
+}
 
 class ShopManager {
   items;
   constructor() {
     this.items = [];
+  }
+
+  getTotalQuantity(value) {
+    let totalQuantity = 0;
+    totalQuantity = totalQuantity + value;
+    return totalQuantity;
   }
 
   addItem(item) {
@@ -39,7 +68,6 @@ class ShopManager {
       </div>
       <h1 class="item__max__quantity">In stock: ${item.inStock}</h1>
       <button class="btn btn__add">ADD TO CHART</button>
-      <button class="btn btn__delete">DELETE</button>
       </li>`;
       list.insertAdjacentHTML("afterbegin", html);
     });
@@ -59,9 +87,54 @@ class Item {
     this.quantity = quantity;
     this.inStock = inStock;
   }
+
+  incrementQuantity() {
+    this.quantity !== this.inStock ? this.quantity++ : this.quantity;
+  }
+  decrementQuantity() {
+    this.quantity > 1 ? this.quantity-- : this.quantity;
+  }
 }
 
 const shopManager = new ShopManager();
+const cartManager = new CartManager();
 shopManager.fillItems();
 shopManager.renderItems(shopManager.items);
-console.log(shopManager);
+
+cartIcon.addEventListener("click", function () {
+  document.querySelector("main").classList.add("hide");
+  cartOverlay.style.display = "block";
+});
+
+list.addEventListener("click", function (event) {
+  if (event.target.classList.contains("arrow__right")) {
+    const li = event.target.closest("li");
+    const id = li.id;
+    const currentItem = shopManager.items.find((item) => item.id === id);
+    currentItem.incrementQuantity();
+    shopManager.renderItems(shopManager.items);
+  } else if (event.target.classList.contains("arrow__left")) {
+    const li = event.target.closest("li");
+    const id = li.id;
+    const currentItem = shopManager.items.find((item) => item.id === id);
+    currentItem.decrementQuantity();
+    shopManager.renderItems(shopManager.items);
+  } else if (event.target.classList.contains("btn__add")) {
+    const li = event.target.closest("li");
+    const id = li.id;
+    const currentItemInCart = cartManager.items.find((item) => item.id == id);
+    const currentItem = shopManager.items.find((item) => item.id === id);
+    console.log(currentItemInCart);
+    if (!currentItemInCart) {
+      cartManager.addItem(currentItem);
+      counterIcon.textContent = cartManager.getTotalQuantity();
+      console.log(currentItem.quantity);
+    } else if (currentItemInCart) {
+      currentItemInCart.quantity =
+        currentItemInCart.quantity + currentItem.quantity;
+      console.log(cartManager);
+      console.log(currentItemInCart.quantity, currentItem.quantity);
+      counterIcon.textContent = cartManager.getTotalQuantity();
+    }
+  }
+});

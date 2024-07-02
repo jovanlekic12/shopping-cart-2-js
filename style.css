@@ -34,6 +34,10 @@ main {
   width: 2.5rem;
 }
 
+.nav__bar__icon:hover {
+  cursor: pointer;
+}
+
 .nav__bar__icon__number {
   background-color: rgb(32, 255, 32);
   font-size: 2rem;
