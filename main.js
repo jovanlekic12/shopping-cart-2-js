@@ -15,6 +15,7 @@ class CartManager {
   }
 
   addItem(item) {
+    // const newCartItems = this.items.map((item) => 'jovan')
     this.items.push(item);
   }
 
@@ -67,7 +68,7 @@ class ShopManager {
       </svg>
       </div>
       <h1 class="item__max__quantity">In stock: ${item.inStock}</h1>
-      <button class="btn btn__add">ADD TO CHART</button>
+      <button class="btn btn__add">ADD TO CART</button>
       </li>`;
       list.insertAdjacentHTML("afterbegin", html);
     });
@@ -100,41 +101,54 @@ const shopManager = new ShopManager();
 const cartManager = new CartManager();
 shopManager.fillItems();
 shopManager.renderItems(shopManager.items);
-
+const buttonsAddToCart = document.querySelectorAll(".btn__add");
+const arrowsLeft = document.querySelectorAll(".arrow__left");
+const arrowsRight = document.querySelectorAll(".arrow__right");
 cartIcon.addEventListener("click", function () {
   document.querySelector("main").classList.add("hide");
   cartOverlay.style.display = "block";
 });
 
-list.addEventListener("click", function (event) {
-  if (event.target.classList.contains("arrow__right")) {
-    const li = event.target.closest("li");
-    const id = li.id;
-    const currentItem = shopManager.items.find((item) => item.id === id);
-    currentItem.incrementQuantity();
-    shopManager.renderItems(shopManager.items);
-  } else if (event.target.classList.contains("arrow__left")) {
-    const li = event.target.closest("li");
-    const id = li.id;
-    const currentItem = shopManager.items.find((item) => item.id === id);
-    currentItem.decrementQuantity();
-    shopManager.renderItems(shopManager.items);
-  } else if (event.target.classList.contains("btn__add")) {
-    const li = event.target.closest("li");
+buttonsAddToCart.forEach((button) => {
+  button.addEventListener("click", function () {
+    const li = button.closest("li");
     const id = li.id;
     const currentItemInCart = cartManager.items.find((item) => item.id == id);
     const currentItem = shopManager.items.find((item) => item.id === id);
-    console.log(currentItemInCart);
     if (!currentItemInCart) {
       cartManager.addItem(currentItem);
       counterIcon.textContent = cartManager.getTotalQuantity();
       console.log(currentItem.quantity);
+      return;
     } else if (currentItemInCart) {
-      currentItemInCart.quantity =
-        currentItemInCart.quantity + currentItem.quantity;
+      currentItemInCart.quantity += currentItem.quantity;
       console.log(cartManager);
       console.log(currentItemInCart.quantity, currentItem.quantity);
       counterIcon.textContent = cartManager.getTotalQuantity();
+      return;
     }
-  }
+  });
+});
+
+arrowsLeft.forEach((arrow) => {
+  arrow.addEventListener("click", function () {
+    const li = arrow.closest("li");
+    const id = li.id;
+    const currentItem = shopManager.items.find((item) => item.id === id);
+    currentItem.decrementQuantity();
+    shopManager.renderItems(shopManager.items);
+  });
+});
+
+arrowsRight.forEach((arrow) => {
+  arrow.addEventListener("click", function () {
+    // const li = arrow.closest("li");
+    // const id = li.id;
+    const currentItem = shopManager.items.find(
+      (item) => item.id === arrow.closest("li").id
+    );
+    currentItem.incrementQuantity();
+    shopManager.renderItems(shopManager.items);
+    console.log(currentItem);
+  });
 });
