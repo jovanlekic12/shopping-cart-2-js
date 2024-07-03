@@ -15,8 +15,8 @@ class CartManager {
   }
 
   addItem(item) {
-    // const newCartItems = this.items.map((item) => 'jovan')
-    this.items.push(item);
+    const newItem = { ...item };
+    this.items.push(newItem);
   }
 
   getTotalQuantity() {
@@ -32,12 +32,6 @@ class ShopManager {
   items;
   constructor() {
     this.items = [];
-  }
-
-  getTotalQuantity(value) {
-    let totalQuantity = 0;
-    totalQuantity = totalQuantity + value;
-    return totalQuantity;
   }
 
   addItem(item) {
@@ -90,10 +84,15 @@ class Item {
   }
 
   incrementQuantity() {
-    this.quantity !== this.inStock ? this.quantity++ : this.quantity;
+    this.inStock > 0 ? this.quantity++ : this.quantity;
   }
   decrementQuantity() {
     this.quantity > 1 ? this.quantity-- : this.quantity;
+  }
+  decrementInStock() {
+    if (this.inStock > 0 && this.inStock >= this.quantity) {
+      this.inStock = this.inStock - this.quantity;
+    }
   }
 }
 
@@ -104,6 +103,8 @@ shopManager.renderItems(shopManager.items);
 const buttonsAddToCart = document.querySelectorAll(".btn__add");
 const arrowsLeft = document.querySelectorAll(".arrow__left");
 const arrowsRight = document.querySelectorAll(".arrow__right");
+const counters = document.querySelectorAll(".item__quantity");
+const inStockCounter = document.querySelectorAll(".item__max__quantity");
 cartIcon.addEventListener("click", function () {
   document.querySelector("main").classList.add("hide");
   cartOverlay.style.display = "block";
@@ -119,11 +120,16 @@ buttonsAddToCart.forEach((button) => {
       cartManager.addItem(currentItem);
       counterIcon.textContent = cartManager.getTotalQuantity();
       console.log(currentItem.quantity);
+      console.log(cartManager);
       return;
     } else if (currentItemInCart) {
-      currentItemInCart.quantity += currentItem.quantity;
-      console.log(cartManager);
-      console.log(currentItemInCart.quantity, currentItem.quantity);
+      if (
+        currentItemInCart.inStock > 0 &&
+        currentItemInCart.inStock >= currentItem.quantity
+      )
+        currentItemInCart.quantity += currentItem.quantity;
+      currentItem.decrementInStock();
+      console.log(currentItem);
       counterIcon.textContent = cartManager.getTotalQuantity();
       return;
     }
@@ -136,19 +142,24 @@ arrowsLeft.forEach((arrow) => {
     const id = li.id;
     const currentItem = shopManager.items.find((item) => item.id === id);
     currentItem.decrementQuantity();
-    shopManager.renderItems(shopManager.items);
+    counters.forEach((counter) => {
+      if (counter.closest("li").id === li.id) {
+        counter.textContent = currentItem.quantity;
+      }
+    });
   });
 });
 
 arrowsRight.forEach((arrow) => {
   arrow.addEventListener("click", function () {
-    // const li = arrow.closest("li");
-    // const id = li.id;
-    const currentItem = shopManager.items.find(
-      (item) => item.id === arrow.closest("li").id
-    );
+    const li = arrow.closest("li");
+    const id = li.id;
+    const currentItem = shopManager.items.find((item) => item.id === id);
     currentItem.incrementQuantity();
-    shopManager.renderItems(shopManager.items);
-    console.log(currentItem);
+    counters.forEach((counter) => {
+      if (counter.closest("li").id === li.id) {
+        counter.textContent = currentItem.quantity;
+      }
+    });
   });
 });
