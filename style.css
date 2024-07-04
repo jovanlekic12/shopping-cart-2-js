@@ -114,7 +114,6 @@ main {
 }
 
 .overlay {
-  display: none;
   position: relative;
   width: 100%;
   height: 100vh;
@@ -130,12 +129,15 @@ main {
   border: 1.2rem solid rgb(17, 214, 17);
 }
 
+.shopping__cart__div {
+  border-right: 1.2rem solid rgb(17, 214, 17);
+}
+
 .cart__icon {
   width: 40rem;
   height: 40rem;
   max-height: 50rem;
   max-width: 50rem;
-  border-right: 1.2rem solid rgb(17, 214, 17);
 }
 
 .cart__list {
@@ -146,7 +148,7 @@ main {
 
 .shopping__cart ul {
   list-style: none;
-  padding: 0;
+  padding: 2rem;
 }
 
 .cart__title {

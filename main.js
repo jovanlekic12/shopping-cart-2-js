@@ -3,11 +3,12 @@ import "./data.js";
 import { items } from "./data.js";
 
 const list = document.querySelector(".shop__list");
+const cartList = document.querySelector(".cart__list");
 const counterIcon = document.querySelector(".nav__bar__icon__number");
 const cartIcon = document.querySelector(".nav__bar__icon");
 const cartOverlay = document.querySelector(".overlay");
 const shoppingCart = document.querySelector(".shopping__cart");
-
+const backToShopping = document.querySelector(".back__to__shopping");
 class CartManager {
   items;
   constructor() {
@@ -16,7 +17,15 @@ class CartManager {
 
   addItem(item) {
     const newItem = { ...item };
-    this.items.push(newItem);
+    const addToCartItem = new Item(
+      newItem.name,
+      newItem.price,
+      newItem.quantity,
+      newItem.inStock,
+      newItem.id
+    );
+    console.log(addToCartItem);
+    this.items.push(addToCartItem);
   }
 
   getTotalQuantity() {
@@ -25,6 +34,24 @@ class CartManager {
       totalQuantity = totalQuantity + this.items[i].quantity;
     }
     return totalQuantity;
+  }
+
+  deleteItem(id) {
+    this.items = this.items.filter((item) => item.id !== id);
+  }
+
+  renderItems() {
+    cartList.innerHTML = "";
+    console.log(items);
+    this.items.forEach((item) => {
+      const html = `<li class="list__item" id="${item.id}">
+      <h1 class="item__name">Name: ${item.name}</h1>
+      <h1 class="item__quantity">Quantity: ${item.quantity}
+      <h1 class="item__price">Price: ${item.getTotalPrice()}$</h1>
+      <button class="btn btn__delete">DELETE</button>
+      </li>`;
+      cartList.insertAdjacentHTML("afterbegin", html);
+    });
   }
 }
 
@@ -75,8 +102,8 @@ class Item {
   price;
   quantity;
   inStock;
-  constructor(name, price, quantity, inStock) {
-    this.id = self.crypto.randomUUID();
+  constructor(name, price, quantity, inStock, id = self.crypto.randomUUID()) {
+    this.id = id;
     this.name = name;
     this.price = price;
     this.quantity = quantity;
@@ -92,7 +119,12 @@ class Item {
   decrementInStock() {
     if (this.inStock > 0 && this.inStock >= this.quantity) {
       this.inStock = this.inStock - this.quantity;
+    } else {
+      return false;
     }
+  }
+  getTotalPrice() {
+    return this.price * this.quantity;
   }
 }
 
@@ -104,10 +136,15 @@ const buttonsAddToCart = document.querySelectorAll(".btn__add");
 const arrowsLeft = document.querySelectorAll(".arrow__left");
 const arrowsRight = document.querySelectorAll(".arrow__right");
 const counters = document.querySelectorAll(".item__quantity");
-const inStockCounter = document.querySelectorAll(".item__max__quantity");
+const inStockCounters = document.querySelectorAll(".item__max__quantity");
 cartIcon.addEventListener("click", function () {
   document.querySelector("main").classList.add("hide");
-  cartOverlay.style.display = "block";
+  cartOverlay.classList.remove("hide");
+});
+
+backToShopping.addEventListener("click", function () {
+  document.querySelector("main").classList.remove("hide");
+  cartOverlay.classList.add("hide");
 });
 
 buttonsAddToCart.forEach((button) => {
@@ -118,18 +155,31 @@ buttonsAddToCart.forEach((button) => {
     const currentItem = shopManager.items.find((item) => item.id === id);
     if (!currentItemInCart) {
       cartManager.addItem(currentItem);
+      cartManager.renderItems();
+      currentItem.decrementInStock();
       counterIcon.textContent = cartManager.getTotalQuantity();
+      inStockCounters.forEach((counter) => {
+        if (counter.closest("li").id === li.id) {
+          counter.textContent = `In stock: ${currentItem.inStock}`;
+        }
+      });
       console.log(currentItem.quantity);
       console.log(cartManager);
       return;
     } else if (currentItemInCart) {
       if (
-        currentItemInCart.inStock > 0 &&
-        currentItemInCart.inStock >= currentItem.quantity
+        currentItem.inStock > 0 &&
+        currentItem.inStock >= currentItem.quantity
       )
         currentItemInCart.quantity += currentItem.quantity;
+      cartManager.renderItems();
       currentItem.decrementInStock();
-      console.log(currentItem);
+      inStockCounters.forEach((counter) => {
+        if (counter.closest("li").id === li.id) {
+          counter.textContent = `In stock: ${currentItem.inStock}`;
+        }
+      });
+      console.log(currentItemInCart);
       counterIcon.textContent = cartManager.getTotalQuantity();
       return;
     }
@@ -162,4 +212,23 @@ arrowsRight.forEach((arrow) => {
       }
     });
   });
+});
+
+cartList.addEventListener("click", function (event) {
+  if (event.target.classList.contains("btn__delete")) {
+    const li = event.target.closest("li");
+    const id = li.id;
+    const currentItemInCart = cartManager.items.find((item) => item.id == id);
+    const currentItem = shopManager.items.find((item) => item.id === id);
+    currentItem.inStock = currentItem.inStock + currentItemInCart.quantity;
+    inStockCounters.forEach((counter) => {
+      if (counter.closest("li").id === li.id) {
+        counter.textContent = `In stock: ${currentItem.inStock}`;
+      }
+    });
+    cartManager.deleteItem(id);
+    li.remove();
+    counterIcon.textContent = cartManager.items.length;
+    console.log(shopManager.items);
+  }
 });
