@@ -9,6 +9,8 @@ const cartIcon = document.querySelector(".nav__bar__icon");
 const cartOverlay = document.querySelector(".overlay");
 const shoppingCart = document.querySelector(".shopping__cart");
 const backToShopping = document.querySelector(".back__to__shopping");
+const priceCart = document.querySelector(".price");
+const totalPrice = document.querySelector(".total__price");
 class CartManager {
   items;
   constructor() {
@@ -24,7 +26,6 @@ class CartManager {
       newItem.inStock,
       newItem.id
     );
-    console.log(addToCartItem);
     this.items.push(addToCartItem);
   }
 
@@ -36,13 +37,20 @@ class CartManager {
     return totalQuantity;
   }
 
+  getTotalPrice() {
+    let totalPrice = 0;
+    for (let i = 0; i <= this.items.length - 1; i++) {
+      totalPrice = totalPrice + this.items[i].getTotalPrice();
+    }
+    return totalPrice;
+  }
+
   deleteItem(id) {
     this.items = this.items.filter((item) => item.id !== id);
   }
 
   renderItems() {
     cartList.innerHTML = "";
-    console.log(items);
     this.items.forEach((item) => {
       const html = `<li class="list__item" id="${item.id}">
       <h1 class="item__name">Name: ${item.name}</h1>
@@ -111,10 +119,12 @@ class Item {
   }
 
   incrementQuantity() {
-    this.inStock > 0 ? this.quantity++ : this.quantity;
+    // this.inStock > 0 ? this.quantity++ : this.quantity;
+    this.quantity++;
   }
   decrementQuantity() {
-    this.quantity > 1 ? this.quantity-- : this.quantity;
+    // this.quantity > 1 ? this.quantity-- : this.quantity;
+    this.quantity--;
   }
   decrementInStock() {
     if (this.inStock > 0 && this.inStock >= this.quantity) {
@@ -156,6 +166,10 @@ buttonsAddToCart.forEach((button) => {
     if (!currentItemInCart) {
       cartManager.addItem(currentItem);
       cartManager.renderItems();
+      priceCart.textContent = `Price: ${cartManager.getTotalPrice()}$`;
+      totalPrice.textContent = `Total: ${
+        cartManager.getTotalPrice() + cartManager.getTotalPrice() * 0.2
+      }$`;
       currentItem.decrementInStock();
       counterIcon.textContent = cartManager.getTotalQuantity();
       inStockCounters.forEach((counter) => {
@@ -163,8 +177,6 @@ buttonsAddToCart.forEach((button) => {
           counter.textContent = `In stock: ${currentItem.inStock}`;
         }
       });
-      console.log(currentItem.quantity);
-      console.log(cartManager);
       return;
     } else if (currentItemInCart) {
       if (
@@ -173,13 +185,16 @@ buttonsAddToCart.forEach((button) => {
       )
         currentItemInCart.quantity += currentItem.quantity;
       cartManager.renderItems();
+      priceCart.textContent = `Price: ${cartManager.getTotalPrice()}$`;
+      totalPrice.textContent = `Total: ${
+        cartManager.getTotalPrice() + cartManager.getTotalPrice() * 0.2
+      }$`;
       currentItem.decrementInStock();
       inStockCounters.forEach((counter) => {
         if (counter.closest("li").id === li.id) {
           counter.textContent = `In stock: ${currentItem.inStock}`;
         }
       });
-      console.log(currentItemInCart);
       counterIcon.textContent = cartManager.getTotalQuantity();
       return;
     }
@@ -227,8 +242,14 @@ cartList.addEventListener("click", function (event) {
       }
     });
     cartManager.deleteItem(id);
+    priceCart.textContent = `Price: ${cartManager.getTotalPrice()}$`;
+    totalPrice.textContent = `Total: ${
+      cartManager.getTotalPrice() + cartManager.getTotalPrice() * 0.2
+    }$`;
     li.remove();
+    if (cartManager.items.length === 0) {
+      cartList.innerHTML = `<li><h1 class="cart__title">YOUR CART IS EMPTY</h1></li>`;
+    }
     counterIcon.textContent = cartManager.items.length;
-    console.log(shopManager.items);
   }
 });

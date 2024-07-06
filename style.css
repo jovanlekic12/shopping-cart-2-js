@@ -148,6 +148,14 @@ main {
 
 .shopping__cart ul {
   list-style: none;
+  display: flex;
+  flex-direction: column;
+  height: 30rem;
+  padding: 2rem;
+  overflow-y: scroll;
+}
+
+.cart {
   padding: 2rem;
 }
 
@@ -158,6 +166,10 @@ main {
 .shopping__cart h2 {
   text-align: center;
   color: rgb(22, 187, 22);
+}
+
+.price__cart {
+  align-self: flex-end;
 }
 
 .shopping__cart h2:hover {
