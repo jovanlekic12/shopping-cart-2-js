@@ -119,11 +119,9 @@ class Item {
   }
 
   incrementQuantity() {
-    // this.inStock > 0 ? this.quantity++ : this.quantity;
     this.quantity++;
   }
   decrementQuantity() {
-    // this.quantity > 1 ? this.quantity-- : this.quantity;
     this.quantity--;
   }
   decrementInStock() {
